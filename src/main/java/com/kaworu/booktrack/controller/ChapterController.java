@@ -60,6 +60,23 @@ public class ChapterController {
         return ResponseResult.getSuccess("获取成功").setData(chapter);
     }
 
+    @ApiOperation("重新正文")
+    @GetMapping("/again/{id}")
+    public ResponseResult again(@ApiParam("章节ID") @PathVariable("id") long id){
+        Chapter chapter;
+        try {
+            chapter = chapterService.contentAgain(id);
+        } catch (BusinessException e){
+            e.printStackTrace();
+            return ResponseResult.getFailure(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseResult.getFailure("获取内容失败");
+        }
+
+        return ResponseResult.getSuccess("已重新获取该章节内容").setData(chapter);
+    }
+
     @ApiOperation("获取正文")
     @GetMapping("/content")
     public ResponseResult content(@ApiParam("章节序号") @RequestParam("serial") int serial,

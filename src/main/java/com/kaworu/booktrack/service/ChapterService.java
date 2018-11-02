@@ -55,6 +55,22 @@ public class ChapterService {
     }
 
     /**
+     * 通过章节ID重新爬取对应内容，
+     * @param id
+     * @return
+     * @throws IOException
+     */
+    public Chapter contentAgain(long id) throws IOException {
+        Chapter chapter = chapterRepository.findById(id).orElse(null);
+        if(chapter == null){
+            throw new BusinessException("找不到对应章节");
+        }
+        chapter.setStatus(false);
+
+        return content(chapter);
+    }
+
+    /**
      * 通过页面序号和图书ID获取对应内容
      * @param chapter
      * @return
