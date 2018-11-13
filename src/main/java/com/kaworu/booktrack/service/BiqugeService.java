@@ -1,11 +1,9 @@
 package com.kaworu.booktrack.service;
 
-import com.alibaba.fastjson.JSON;
 import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.repository.BookRepository;
 import com.kaworu.booktrack.repository.ChapterRepository;
-import com.kaworu.booktrack.utils.ChineseChangeToNumber;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,16 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * 笔趣看爬取
+ * 笔趣阁爬取
  */
 @Service
-public class BiqukanService implements BaseCrawlService{
+public class BiqugeService implements BaseCrawlService{
     @Autowired
     private BookRepository bookRepository;
 
@@ -54,11 +53,11 @@ public class BiqukanService implements BaseCrawlService{
             book.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         book.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         //图书名
-        book.setBookName(document.body().select("[class=info]").select("h2").text());
+        book.setBookName(document.body().select("[id=info]").select("h1").text());
         //作者名
-        String author = document.body().select("[class=info]").select("div[class=small]").select("span").first().text();
-        book.setSource("1");
-        book.setAuthor(author.substring(3, author.length()));
+        String author = document.body().select("[id=info]").select("p").first().text().replaceAll(" ","").replaceAll("作者：","");
+        book.setSource("2");
+        book.setAuthor(author);
 
         return book;
     }
@@ -79,9 +78,9 @@ public class BiqukanService implements BaseCrawlService{
 
         List<Chapter> chapters = chapterRepository.findAllByBookId(book.getId());
 
-        Elements elements = document.body().select("div[class=listmain]").select("dd");
+        Elements elements = document.body().select("div[class=box_con]").select("dd");
         for (Element e : elements) {
-            String url = "https://www.biqukan.com" + e.select("a").attr("href");
+            String url = "http://www.biquge.com.tw" + e.select("a").attr("href");
             Chapter chapter = null;
             for(Chapter chapterTmp : chapters){
                 if(url.equals(chapterTmp.getUrl()))
@@ -120,24 +119,12 @@ public class BiqukanService implements BaseCrawlService{
                 .header("upgrade-insecure-requests","1")
                 .header("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36")
                 .get();
-        String content = document.body().select("div[class=showtxt]").toString();
+        String content = document.body().select("div[id=content]").toString();
         return content;
     }
 
-    public static void main(String[] args){
-//        BaseCrawlService service = new BiqukanService();
-//        try {
-////            String content = service.getContent("https://www.biqukan.com/0_319/22679132.html");
-////            System.out.println(JSON.toJSONString(content));
-////            int id = BiqukanService.getChapterId("第七十二章");
-////            System.out.println(id);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        String url = "https://www.biqukan.com/22_22156/8129627.html";
-        int x = url.lastIndexOf("/");
-        int y = url.lastIndexOf(".html");
-        System.out.println(url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".html")));
+    public static void main(String[] args) throws IOException {
+        System.out.println(URLEncoder.encode("无限恐怖","gbk"));
+        System.out.println(URLDecoder.decode("%CE%DE%CF%DE%BF%D6%B2%C0","gbk"));
     }
 }

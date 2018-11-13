@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Website {
-    BIQUKAN("笔趣看", "www.biqukan.com", "1", "biqukanService");
+    BIQUKAN("笔趣看", "www.biqukan.com", "1", "biqukanService"),
+    BIQUGE("笔趣阁", "www.biquge.com.tw", "2", "biqugeService");
 
     private final String siteName;
     private final String host;
