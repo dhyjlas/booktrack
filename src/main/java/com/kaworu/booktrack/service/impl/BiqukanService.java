@@ -1,10 +1,11 @@
-package com.kaworu.booktrack.service;
+package com.kaworu.booktrack.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.repository.BookRepository;
 import com.kaworu.booktrack.repository.ChapterRepository;
+import com.kaworu.booktrack.service.BaseCrawlService;
 import com.kaworu.booktrack.utils.ChineseChangeToNumber;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,7 +25,7 @@ import java.util.List;
  * 笔趣看爬取
  */
 @Service
-public class BiqukanService implements BaseCrawlService{
+public class BiqukanService implements BaseCrawlService {
     @Autowired
     private BookRepository bookRepository;
 
@@ -81,7 +82,8 @@ public class BiqukanService implements BaseCrawlService{
 
         Elements elements = document.body().select("div[class=listmain]").select("dd");
         for (Element e : elements) {
-            String url = "https://www.biqukan.com" + e.select("a").attr("href");
+            String[] spt = book.getUrl().split("/");
+            String url = spt[0] + "/" + spt[1] + "/" + spt[2] + e.select("a").attr("href");
             Chapter chapter = null;
             for(Chapter chapterTmp : chapters){
                 if(url.equals(chapterTmp.getUrl()))

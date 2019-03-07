@@ -2,26 +2,19 @@ package com.kaworu.booktrack.controller;
 
 import com.kaworu.booktrack.config.Website;
 import com.kaworu.booktrack.entity.Book;
-import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.entity.Option;
 import com.kaworu.booktrack.exception.BusinessException;
-import com.kaworu.booktrack.service.BaseCrawlService;
-import com.kaworu.booktrack.service.BiqukanService;
 import com.kaworu.booktrack.service.BookService;
 import com.kaworu.booktrack.utils.ResponseResult;
-import com.kaworu.booktrack.utils.SpringUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/book")

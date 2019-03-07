@@ -5,13 +5,12 @@ import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.repository.BookRepository;
 import com.kaworu.booktrack.repository.ChapterRepository;
 import com.kaworu.booktrack.service.BaseCrawlService;
-import com.kaworu.booktrack.service.BiqukanService;
+import com.kaworu.booktrack.service.impl.BiqukanService;
 import com.kaworu.booktrack.utils.ResponseResult;
 import com.kaworu.booktrack.utils.SpringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

@@ -1,9 +1,10 @@
-package com.kaworu.booktrack.service;
+package com.kaworu.booktrack.service.impl;
 
 import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.repository.BookRepository;
 import com.kaworu.booktrack.repository.ChapterRepository;
+import com.kaworu.booktrack.service.BaseCrawlService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +24,7 @@ import java.util.List;
  * 笔趣阁爬取
  */
 @Service
-public class BiqugeService implements BaseCrawlService{
+public class BiqugeService implements BaseCrawlService {
     @Autowired
     private BookRepository bookRepository;
 
@@ -80,7 +81,8 @@ public class BiqugeService implements BaseCrawlService{
 
         Elements elements = document.body().select("div[class=box_con]").select("dd");
         for (Element e : elements) {
-            String url = "http://www.biquge.com.tw" + e.select("a").attr("href");
+            String[] spt = book.getUrl().split("/");
+            String url = spt[0] + "/" + spt[1] + "/" + spt[2] + e.select("a").attr("href");
             Chapter chapter = null;
             for(Chapter chapterTmp : chapters){
                 if(url.equals(chapterTmp.getUrl()))
