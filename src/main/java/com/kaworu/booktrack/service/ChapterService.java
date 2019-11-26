@@ -1,8 +1,10 @@
 package com.kaworu.booktrack.service;
 
 import com.kaworu.booktrack.entity.Chapter;
+import com.kaworu.booktrack.entity.Website;
 import com.kaworu.booktrack.exception.BusinessException;
 import com.kaworu.booktrack.repository.ChapterRepository;
+import com.kaworu.booktrack.repository.WebsiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +23,10 @@ public class ChapterService {
     private ChapterRepository chapterRepository;
 
     @Autowired
-    private FactoryService factoryService;
+    private WebsiteRepository websiteRepository;
+
+    @Autowired
+    private XPathCrawlService xPathCrawlService;
 
     /**
      * 获取图书章节
@@ -79,10 +84,10 @@ public class ChapterService {
     @Transactional
     public Chapter content(Chapter chapter) throws IOException {
         if(!chapter.isStatus()){
-            BaseCrawlService service = factoryService.getBean(chapter.getSource());
-            if(service == null)
+            Website website = websiteRepository.findById(chapter.getSource()).orElse(null);
+            if(website == null)
                 throw new BusinessException("数据来源错误");
-            String content = service.getContent(chapter.getUrl());
+            String content = xPathCrawlService.getContent(chapter.getUrl(), website);
             chapter.setContent(content);
             chapter.setStatus(true);
             chapter.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

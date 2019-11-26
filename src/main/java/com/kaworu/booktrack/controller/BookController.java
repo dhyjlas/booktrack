@@ -1,8 +1,8 @@
 package com.kaworu.booktrack.controller;
 
-import com.kaworu.booktrack.config.Website;
 import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Option;
+import com.kaworu.booktrack.entity.Website;
 import com.kaworu.booktrack.exception.BusinessException;
 import com.kaworu.booktrack.service.BookService;
 import com.kaworu.booktrack.utils.ResponseResult;
@@ -61,9 +61,13 @@ public class BookController {
     @PostMapping("/add")
     public ResponseResult add(@ApiParam("URL") @RequestBody Book book){
         try {
-            if ("0".equals(book.getSource()))
-                book.setSource(bookService.analysisUrl(book.getUrl()));
-            bookService.add(book.getUrl(), book.getSource());
+            Website website = null;
+            if (book.getSource() == 0) {
+                website = bookService.analysisUrl(book.getUrl());
+            }else{
+                website = bookService.findById(book.getSource());
+            }
+            bookService.add(book.getUrl(), website);
         }catch (MalformedURLException e){
             e.printStackTrace();
             return ResponseResult.getFailure("网址解析失败");
@@ -81,9 +85,11 @@ public class BookController {
     @GetMapping("/website")
     public ResponseResult website(){
         List<Option> websites = new ArrayList<>();
-        for(Website website : Website.values()){
-            websites.add(new Option(website.getSource(), website.getSiteName()));
+        List<Website> websiteList = bookService.getWebsites();
+        for(Website website : websiteList){
+            websites.add(new Option(website.getId(), website.getName()));
         }
+
         return ResponseResult.getSuccess("获取成功").setData(websites);
     }
 }

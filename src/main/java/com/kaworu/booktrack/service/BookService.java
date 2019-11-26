@@ -1,13 +1,12 @@
 package com.kaworu.booktrack.service;
 
-import com.kaworu.booktrack.config.Website;
 import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Chapter;
+import com.kaworu.booktrack.entity.Website;
 import com.kaworu.booktrack.exception.BusinessException;
 import com.kaworu.booktrack.repository.BookRepository;
 import com.kaworu.booktrack.repository.ChapterRepository;
-import com.kaworu.booktrack.utils.ResponseResult;
-import com.kaworu.booktrack.utils.SpringUtil;
+import com.kaworu.booktrack.repository.WebsiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,10 +30,13 @@ public class BookService {
     private BookRepository bookRepository;
 
     @Autowired
-    private FactoryService factoryService;
+    private ChapterRepository chapterRepository;
 
     @Autowired
-    private ChapterRepository chapterRepository;
+    private WebsiteRepository websiteRepository;
+
+    @Autowired
+    private XPathCrawlService xPathCrawlService;
 
     /**
      * 获取图书列表
@@ -84,12 +86,14 @@ public class BookService {
     public int refresh(long id) throws IOException {
         Book book = bookRepository.findById(id).orElse(null);
         if(book == null)
-            throw new BusinessException("ID不存在");
+            throw new BusinessException("找不到这本书了");
+        Website website = websiteRepository.findById(book.getSource()).orElse(null);
+        if(website == null)
+            throw new BusinessException("找不到爬取规则了");
 
-        BaseCrawlService service = factoryService.getBean(book.getSource());
-        book = service.getBook(book.getUrl());
+        book = xPathCrawlService.getBook(book.getUrl(), website);
 
-        List<Chapter> chapters = service.getChapter(book);
+        List<Chapter> chapters = xPathCrawlService.getChapter(book, website);
         chapterRepository.saveAll(chapters);
 
         int addNum = chapters.size() - book.getChapters();
@@ -102,16 +106,16 @@ public class BookService {
     /**
      * 新增图书
      * @param url
-     * @param source
+     * @param website
+     * @return
      */
     @Transactional
-    public Book add(String url, String source){
+    public Book add(String url, Website website){
         try {
-            BaseCrawlService service = factoryService.getBean(source);
-            Book book = service.getBook(url);
+            Book book = xPathCrawlService.getBook(url, website);
             bookRepository.saveAndFlush(book);
 
-            List<Chapter> chapters = service.getChapter(book);
+            List<Chapter> chapters = xPathCrawlService.getChapter(book, website);
             chapterRepository.saveAll(chapters);
 
             book.setChapters(chapters.size());
@@ -131,12 +135,31 @@ public class BookService {
      * @return
      * @throws MalformedURLException
      */
-    public String analysisUrl(String url) throws MalformedURLException {
+    public Website analysisUrl(String url) throws MalformedURLException {
         URL urlObject = new URL(url);
         String host = urlObject.getHost();
-        Website website = Website.getWebsiteByHost(host);
-        if(website == null)
-            throw new BusinessException("暂不支持该站爬取");
-        return website.getSource();
+        System.out.println(host);
+
+        List<Website> websiteList = websiteRepository.findAll();
+        for(Website website : websiteList){
+            String webhost = new URL(website.getHost()).getHost();
+            if(webhost.equals(host)){
+                return website;
+            }
+        }
+
+        throw new BusinessException("未找到匹配的域名");
+    }
+
+    /**
+     * 获取所有站点
+     * @return
+     */
+    public List<Website> getWebsites(){
+        return websiteRepository.findAll();
+    }
+
+    public Website findById(long id){
+        return websiteRepository.findById(id).orElse(null);
     }
 }
