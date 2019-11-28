@@ -5,6 +5,7 @@ import com.kaworu.booktrack.entity.Option;
 import com.kaworu.booktrack.entity.Website;
 import com.kaworu.booktrack.exception.BusinessException;
 import com.kaworu.booktrack.service.BookService;
+import com.kaworu.booktrack.service.WebsiteService;
 import com.kaworu.booktrack.utils.ResponseResult;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,6 +22,9 @@ import java.util.List;
 public class BookController {
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private WebsiteService websiteService;
 
     @ApiOperation("获取图书列表")
     @GetMapping("/list")
@@ -63,9 +67,9 @@ public class BookController {
         try {
             Website website = null;
             if (book.getSource() == 0) {
-                website = bookService.analysisUrl(book.getUrl());
+                website = websiteService.analysisUrl(book.getUrl());
             }else{
-                website = bookService.findById(book.getSource());
+                website = websiteService.findById(book.getSource());
             }
             bookService.add(book.getUrl(), website);
         }catch (MalformedURLException e){
@@ -85,7 +89,7 @@ public class BookController {
     @GetMapping("/website")
     public ResponseResult website(){
         List<Option> websites = new ArrayList<>();
-        List<Website> websiteList = bookService.getWebsites();
+        List<Website> websiteList = websiteService.getWebsites();
         for(Website website : websiteList){
             websites.add(new Option(website.getId(), website.getName()));
         }

@@ -161,6 +161,9 @@ public class XPathCrawlService{
      * @return
      */
     private String parseToString(Document document, String xpath){
+        if(StringUtils.isEmpty(xpath)){
+            return "";
+        }
         JXDocument jxd = JXDocument.create(document);
         List<JXNode> jxNodes = jxd.selN(xpath);
         for(JXNode node : jxNodes){
@@ -183,5 +186,29 @@ public class XPathCrawlService{
             list.add(node.toString());
         }
         return list;
+    }
+
+    /**
+     * 规则测试
+     * @param url
+     * @param website
+     * @param xpath
+     * @return
+     * @throws IOException
+     */
+    public String parseToListForString(String url, Website website, String xpath) throws IOException {
+        if(StringUtils.isEmpty(xpath)){
+            return "";
+        }
+        Document document = connAndGetDocument(url, website);
+        List<String> list = parseToList(document, xpath);
+        StringBuilder builder = new StringBuilder();
+        String flag = "";
+        for(String data : list){
+            builder.append(flag).append(data);
+            flag = "\n";
+        }
+
+        return builder.toString();
     }
 }

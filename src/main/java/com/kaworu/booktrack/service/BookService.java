@@ -128,38 +128,4 @@ public class BookService {
 
         return null;
     }
-
-    /**
-     * 通过url分析来源
-     * @param url
-     * @return
-     * @throws MalformedURLException
-     */
-    public Website analysisUrl(String url) throws MalformedURLException {
-        URL urlObject = new URL(url);
-        String host = urlObject.getHost();
-        System.out.println(host);
-
-        List<Website> websiteList = websiteRepository.findAll();
-        for(Website website : websiteList){
-            String webhost = new URL(website.getHost()).getHost();
-            if(webhost.equals(host)){
-                return website;
-            }
-        }
-
-        throw new BusinessException("未找到匹配的域名");
-    }
-
-    /**
-     * 获取所有站点
-     * @return
-     */
-    public List<Website> getWebsites(){
-        return websiteRepository.findAll();
-    }
-
-    public Website findById(long id){
-        return websiteRepository.findById(id).orElse(null);
-    }
 }

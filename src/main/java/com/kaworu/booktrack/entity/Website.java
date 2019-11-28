@@ -57,4 +57,10 @@ public class Website {
     @Basic(fetch = FetchType.LAZY)
     @Column(name="content_replace", columnDefinition="longtext COMMENT '内容替换'")
     private String contentReplace;
+
+    @Transient
+    private String catalogAddress;
+
+    @Transient
+    private String contentAddress;
 }
