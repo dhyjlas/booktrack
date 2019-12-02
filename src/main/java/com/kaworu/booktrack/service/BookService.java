@@ -91,6 +91,10 @@ public class BookService {
         if(website == null)
             throw new BusinessException("找不到爬取规则了");
 
+        String bookName = book.getBookName();
+        String author = book.getAuthor();
+        String url = book.getUrl();
+
         book = xPathCrawlService.getBook(book.getUrl(), website);
 
         List<Chapter> chapters = xPathCrawlService.getChapter(book, website);
@@ -98,6 +102,9 @@ public class BookService {
 
         int addNum = chapters.size() - book.getChapters();
         book.setChapters(chapters.size());
+        book.setBookName(bookName);
+        book.setAuthor(author);
+        book.setUrl(url);
         bookRepository.save(book);
 
         return addNum;
@@ -127,5 +134,23 @@ public class BookService {
         }
 
         return null;
+    }
+
+    /**
+     * 获取图书信息
+     * @param id
+     * @return
+     */
+    public Book findById(long id){
+        return bookRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * 保存图书信息
+     * @param book
+     */
+    @Transactional
+    public void save(Book book){
+        bookRepository.save(book);
     }
 }

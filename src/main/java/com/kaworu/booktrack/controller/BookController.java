@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,5 +96,41 @@ public class BookController {
         }
 
         return ResponseResult.getSuccess("获取成功").setData(websites);
+    }
+
+    @ApiOperation("获取图书信息")
+    @GetMapping("/info/{id}")
+    public ResponseResult again(@ApiParam("图书ID") @PathVariable("id") long id){
+        try {
+            Book book = bookService.findById(id);
+
+            return ResponseResult.getSuccess("获取成功").setData(book);
+        } catch (BusinessException e){
+            e.printStackTrace();
+            return ResponseResult.getFailure(e.getMessage());
+        }
+    }
+
+    @ApiOperation("保存图书信息")
+    @PostMapping("/save")
+    public ResponseResult save(@ApiParam("图书信息") @RequestBody Book book){
+        try {
+            Book book1 = bookService.findById(book.getId());
+            if(book1 == null){
+                return ResponseResult.getFailure("保存失败，找不到图书ID");
+            }
+            book1.setBookName(book.getBookName());
+            book1.setAuthor(book.getAuthor());
+            book1.setUrl(book.getUrl());
+            bookService.save(book1);
+
+            return ResponseResult.getSuccess("保存成功");
+        }catch (BusinessException e){
+            e.printStackTrace();
+            return ResponseResult.getFailure(e.getMessage());
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseResult.getFailure("保存失败");
+        }
     }
 }
