@@ -113,6 +113,7 @@ public class WebsiteService {
                 throw new BusinessException("找不到该ID");
             }
             website0.setName(website.getName());
+            website0.setHost(website.getHost());
             website0.setHeader(website.getHeader());
             website0.setBookNameXpath(website.getBookNameXpath());
             website0.setAuthorXpath(website.getAuthorXpath());

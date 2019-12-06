@@ -24,7 +24,7 @@ public class ChapterController {
     @GetMapping("/list")
     public ResponseResult list(@ApiParam("页码") @RequestParam(value = "page", defaultValue = "0") int page,
                               @ApiParam("每页数量") @RequestParam(value = "size", defaultValue = "50") int size,
-                              @ApiParam("排序字段") @RequestParam(value = "sort", defaultValue = "chapterId") String sort,
+                              @ApiParam("排序字段") @RequestParam(value = "sort", defaultValue = "id") String sort,
                               @ApiParam("排序类型") @RequestParam(value = "direction", defaultValue = "asc") String direction,
                               @ApiParam("图书名") @RequestParam(value = "bookId", defaultValue = "") long bookId){
         Page<Chapter> chapterPage;
