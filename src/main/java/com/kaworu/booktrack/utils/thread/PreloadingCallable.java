@@ -22,7 +22,7 @@ public class PreloadingCallable implements Callable {
     @Override
     public Object call() throws Exception {
         ChapterService chapterService = (ChapterService) SpringUtil.getBean("chapterService");
-        Page<Chapter> chapterPage = chapterService.list(serial, 1, "chapterId", "asc", bookId);
+        Page<Chapter> chapterPage = chapterService.list(serial, 1, "id", "asc", bookId);
         if(chapterPage.getContent() != null && chapterPage.getContent().size() > 0)
             chapterService.content(chapterPage.getContent().get(0));
         return null;

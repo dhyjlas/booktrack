@@ -83,7 +83,7 @@ public class ChapterController {
                                   @ApiParam("图书ID") @RequestParam("bookId") long bookId){
         Chapter chapter;
         try {
-            Page<Chapter> chapterPage = chapterService.list(serial, 1, "chapterId", "asc", bookId);
+            Page<Chapter> chapterPage = chapterService.list(serial, 1, "id", "asc", bookId);
             if(chapterPage.getContent() != null && chapterPage.getContent().size() > 0) {
                 chapter = chapterPage.getContent().get(0);
                 chapter = chapterService.content(chapter);
