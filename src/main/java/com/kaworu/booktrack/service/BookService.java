@@ -153,4 +153,13 @@ public class BookService {
     public void save(Book book){
         bookRepository.save(book);
     }
+
+    /**
+     * 删除整本图书
+     * @param id
+     */
+    @Transactional
+    public void delete(long id){
+        bookRepository.deleteById(id);
+    }
 }

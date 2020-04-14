@@ -1,7 +1,9 @@
 package com.kaworu.booktrack.controller;
 
+import com.kaworu.booktrack.entity.Book;
 import com.kaworu.booktrack.entity.Chapter;
 import com.kaworu.booktrack.exception.BusinessException;
+import com.kaworu.booktrack.service.BookService;
 import com.kaworu.booktrack.service.ChapterService;
 import com.kaworu.booktrack.utils.ResponseResult;
 import com.kaworu.booktrack.utils.thread.PreloadingCallable;
@@ -9,6 +11,7 @@ import com.kaworu.booktrack.utils.thread.ThreadPoolUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +22,12 @@ import java.io.IOException;
 public class ChapterController {
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private BookService bookService;
+
+    @Value("${website.manager.authorization}")
+    private String websiteManagerAuthorization;
 
     @ApiOperation("获取图书章节")
     @GetMapping("/list")
@@ -102,5 +111,32 @@ public class ChapterController {
         }
 
         return ResponseResult.getSuccess("获取成功").setData(chapter);
+    }
+
+    @ApiOperation("清空所有章节")
+    @DeleteMapping("/all/{id}")
+    public ResponseResult save(@RequestHeader(name = "Authorization") String authorization, @ApiParam("图书ID") @PathVariable("id") long id){
+        try {
+            if(!websiteManagerAuthorization.equals(authorization)){
+                return ResponseResult.getFailure("抱歉，您没有管理权限，无法清空所有章节");
+            }
+
+            Book book = bookService.findById(id);
+            if(book == null){
+                return ResponseResult.getFailure("清空失败，找不到图书ID");
+            }
+
+            chapterService.deleteByBookId(id);
+            book.setChapters(0);
+            bookService.save(book);
+
+            return ResponseResult.getSuccess("清空成功");
+        }catch (BusinessException e){
+            e.printStackTrace();
+            return ResponseResult.getFailure(e.getMessage());
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseResult.getFailure("清空失败");
+        }
     }
 }

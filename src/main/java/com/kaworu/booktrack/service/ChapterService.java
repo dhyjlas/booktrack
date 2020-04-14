@@ -97,4 +97,13 @@ public class ChapterService {
 
         return chapter;
     }
+
+    /**
+     * 通过图书ID删除所有章节
+     * @param bookId
+     */
+    @Transactional
+    public void deleteByBookId(long bookId){
+        chapterRepository.deleteAllByBookId(bookId);
+    }
 }
