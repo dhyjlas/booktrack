@@ -1,9 +1,6 @@
 package com.kaworu.booktrack.utils.thread;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class ThreadPoolUtils {
     private static ExecutorService threadPool ;
@@ -16,7 +13,7 @@ public class ThreadPoolUtils {
         if (threadPool == null) {
             synchronized (ThreadPoolUtils.class){
                 if(threadPool == null) {
-                    threadPool = Executors.newFixedThreadPool(5);
+                    threadPool = new ThreadPoolExecutor(5, 100, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(1024), new ThreadPoolExecutor.AbortPolicy());
                     return threadPool;
                 }else{
                     return threadPool;
