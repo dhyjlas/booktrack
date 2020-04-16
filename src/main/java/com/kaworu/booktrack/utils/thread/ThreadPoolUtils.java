@@ -3,7 +3,7 @@ package com.kaworu.booktrack.utils.thread;
 import java.util.concurrent.*;
 
 public class ThreadPoolUtils {
-    private static ExecutorService threadPool ;
+    private volatile static ExecutorService threadPool ;
 
     /**
      * 获取线程池
